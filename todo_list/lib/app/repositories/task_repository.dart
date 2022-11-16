@@ -1,40 +1,36 @@
 import 'package:hive/hive.dart';
 
+import '../model/entities/hive_task_scheme.dart';
 import '../model/entities/task_entity.dart';
 
 class TaskRepository {
-  late Box<Todo> box;
+  Box<HiveTaskScheme> box = Hive.box('todos');
 
-  openBox() async {
-    return await Hive.openBox<List>('tasks');
+  addTodo(HiveTaskScheme todo) {
+    //box = Hive.box('todos');
+
+    box.put(todo.title, todo);
   }
 
-  addTodo(String title, String description, DateTime dueDate) async {
-    box = await Hive.openBox<Todo>('tasks');
-    Todo temp = Todo(title: title, description: description, dueDate: dueDate);
-    ;
-    box.put(temp.title, temp);
-  }
-
-  void editTodo(String title, String newTitle) async {
-    final box = await Hive.openBox<Todo>('tasks');
-    Todo temp = box.get(title)!;
+  editTodo(String title, String newTitle) {
+    //final box = Hive.box('todos');
+    HiveTaskScheme temp = box.get(title)!;
     temp.title = newTitle;
     box.put(title, temp);
   }
 
-  removeTodo(String title) async {
-    final box = await Hive.openBox<Todo>('tasks');
+  void removeTodo(String title) {
+    //final box = Hive.box('todos');
     box.delete(title);
   }
 
-  Future<Todo?> getTodo(String title) async {
-    final box = await Hive.openBox<Todo>('tasks');
+  getTodo(String title) {
+    final box = Hive.box('todos');
     return box.get(title);
   }
 
-  get allTodos async {
-    final box = await Hive.openBox<List>('tasks');
+  get allTodos {
+    final box = Hive.box('todos');
     return box.values;
   }
 }
