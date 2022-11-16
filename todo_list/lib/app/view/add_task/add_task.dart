@@ -1,7 +1,9 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import '../../controller/add_task_controller.dart';
+import '../../controller/task_provider.dart';
 import '../../model/entities/task_entity.dart';
 
 class AddTask extends StatefulWidget {
@@ -27,7 +29,7 @@ class _AddTaskState extends State<AddTask> {
           key: _formKey,
           //autovalidateMode: _autoValidate ? AutovalidateMode.onUserInteraction : AutovalidateMode.disabled, ...
           child: TextFormField(
-            decoration: InputDecoration(label: Text('title')),
+            decoration: const InputDecoration(label: Text('title')),
             controller: _titleController,
             validator: (value) =>
                 _titleAlreadyUsed ? "Title already in use." : null,
@@ -37,7 +39,7 @@ class _AddTaskState extends State<AddTask> {
         ),
         TextField(
           controller: _descriptionController,
-          decoration: InputDecoration(label: Text('description')),
+          decoration: const InputDecoration(label: Text('description')),
         ),
         SizedBox(
           height: 200,
@@ -52,15 +54,17 @@ class _AddTaskState extends State<AddTask> {
         ElevatedButton(
             onPressed: () {
               if (_formKey.currentState!.validate()) {
-                Navigator.pop(
-                    context,
-                    Todo(
-                        title: _titleController.text,
-                        description: _descriptionController.text,
-                        dueDate: _dateTimeController));
+                Provider.of<TaskProvider>(context, listen: false).add(
+                    _titleController.text,
+                    _descriptionController.text,
+                    _dateTimeController);
+                print('jdisoajdiosajdisajdioasjdias');
+                print(Provider.of<TaskProvider>(context, listen: false)
+                    .displayValueSize);
+                Navigator.pop(context);
               }
             },
-            child: Text('submit'))
+            child: const Text('submit'))
       ]),
     );
   }
