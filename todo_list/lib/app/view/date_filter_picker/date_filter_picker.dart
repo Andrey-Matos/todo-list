@@ -2,7 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../../../controller/task_provider.dart';
+import '../../controller/task_provider.dart';
 
 class DateFilterPicker extends StatelessWidget {
   DateTime startDate = DateTime.now();
