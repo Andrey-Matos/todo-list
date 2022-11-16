@@ -1,16 +1,11 @@
-import '../model/entities/hive_task_scheme.dart';
-import '../model/entities/task_entity.dart';
-import '../repositories/task_repository.dart';
+import 'package:provider/provider.dart';
+import 'package:todo_list/app/controller/task_provider.dart';
 
 class AddTaskController {
-  TaskRepository repo = TaskRepository();
-
-  Future<bool> titleAlreadyUsed(String name) async {
-    HiveTaskScheme? nameIsAvailable = await repo.getTodo(name);
-    // Hive will return null in case a item doesn't exist under a given id
-    if (nameIsAvailable != null) {
-      return true;
-    }
-    return false;
+  bool titleAlreadyUsed(context, String name) {
+    List tasks =
+        Provider.of<TaskProvider>(context, listen: false).displayResults;
+    bool nameIsAvailable = tasks.contains((e) => e.title == name);
+    return nameIsAvailable;
   }
 }
