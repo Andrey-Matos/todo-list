@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
+import 'package:todo_list/app/view/date_filter_picker/date_filter_picker.dart';
 
 import '../../../controller/task_provider.dart';
-import 'date_filter_picker.dart';
 
 class SearchBar extends StatelessWidget {
   TextEditingController _textController = TextEditingController();

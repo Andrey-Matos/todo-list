@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:hive/hive.dart';
 import 'package:todo_list/app/view/add_task/add_task.dart';
 import 'package:todo_list/app/view/home/components/search_bar.dart';
 
-import 'components/date_filter_picker.dart';
 import 'components/task_list.dart';
 
 class Home extends StatefulWidget {
