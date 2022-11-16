@@ -1,5 +1,4 @@
 import 'package:flutter/cupertino.dart';
-import 'package:todo_list/app/view/home/components/task_card.dart';
 
 import '../model/entities/hive_task_scheme.dart';
 import '../repositories/task_repository.dart';
@@ -15,35 +14,35 @@ class TaskProvider extends ChangeNotifier {
   void filterByName(filter) {
     _displayResults =
         _displayResults.where((e) => e.title.contains(filter)).toList();
+    print(displayResults);
     notifyListeners();
   }
 
   fetch() {
-    _displayResults = repo.allTodos;
+    _defaultValues = repo.allTodos;
+    _displayResults = _defaultValues;
     notifyListeners();
   }
 
-  void add(title, description, dueAt) {
+  void add(title, description, dueAt) async {
     var filter = _displayResults.where((element) => element.title == title);
     if (filter.isEmpty) {
-      repo.addTodo(HiveTaskScheme(title, description, dueAt));
-      print(repo.allTodos.toString());
+      await repo.addTodo(HiveTaskScheme(title, description, dueAt));
       _displayResults.add(HiveTaskScheme(title, description, dueAt));
       notifyListeners();
     }
   }
 
   void remove(title) {
-    repo.removeTodo(title);
+    //repo.removeTodo(title);
     displayResults.removeWhere((e) => (e.title == title));
     notifyListeners();
   }
 
-  void edit(String original, String newOne) {
-    repo.editTodo(original, newOne);
-    //desculpa
-    //(serio)
-    int targetIndex = _displayResults.indexWhere((e) => e.title == original);
+  void edit(String originalTitle, String newOne) {
+    //repo.editTodo(originalTitle, newOne);
+    int targetIndex =
+        _displayResults.indexWhere((e) => e.title == originalTitle);
     _displayResults[targetIndex].title = newOne;
     notifyListeners();
   }
@@ -54,6 +53,7 @@ class TaskProvider extends ChangeNotifier {
   }
 
   void filterByDate(DateTime lowerLimit, DateTime upperLimit) {
+    _defaultValues = _displayResults;
     _displayResults = _displayResults
         .where((e) =>
             e.dueDate.isAfter(lowerLimit) && e.dueDate.isBefore(upperLimit))
