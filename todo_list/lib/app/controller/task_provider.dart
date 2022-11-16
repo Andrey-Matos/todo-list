@@ -1,11 +1,16 @@
 import 'package:flutter/cupertino.dart';
+import 'package:todo_list/app/view/home/components/task_card.dart';
 
-import '../data/repositories/task_repository.dart';
+import '../model/entities/hive_task_scheme.dart';
+import '../repositories/task_repository.dart';
 
 class TaskProvider extends ChangeNotifier {
   TaskRepository repo = TaskRepository();
-  late List _defaultValues;
-  late List _displayResults;
+  List<HiveTaskScheme> _defaultValues = [];
+  List<HiveTaskScheme> _displayResults = [];
+
+  int get displayValueSize => _displayResults.length;
+  List<HiveTaskScheme> get displayResults => _displayResults;
 
   void filterByName(filter) {
     _displayResults =
@@ -13,14 +18,33 @@ class TaskProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  void fetch() {
-    _defaultValues = repo.allTodos;
-    _displayResults = _defaultValues;
+  fetch() {
+    _displayResults = repo.allTodos;
     notifyListeners();
   }
 
   void add(title, description, dueAt) {
-    repo.addTodo(title, description, dueAt);
+    var filter = _displayResults.where((element) => element.title == title);
+    if (filter.isEmpty) {
+      repo.addTodo(HiveTaskScheme(title, description, dueAt));
+      print(repo.allTodos.toString());
+      _displayResults.add(HiveTaskScheme(title, description, dueAt));
+      notifyListeners();
+    }
+  }
+
+  void remove(title) {
+    repo.removeTodo(title);
+    displayResults.removeWhere((e) => (e.title == title));
+    notifyListeners();
+  }
+
+  void edit(String original, String newOne) {
+    repo.editTodo(original, newOne);
+    //desculpa
+    //(serio)
+    int targetIndex = _displayResults.indexWhere((e) => e.title == original);
+    _displayResults[targetIndex].title = newOne;
     notifyListeners();
   }
 
@@ -29,9 +53,10 @@ class TaskProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  void filterByDate(floor, ceil) {
+  void filterByDate(DateTime lowerLimit, DateTime upperLimit) {
     _displayResults = _displayResults
-        .where((e) => e.dueDate > floor && e.dueDate < ceil)
+        .where((e) =>
+            e.dueDate.isAfter(lowerLimit) && e.dueDate.isBefore(upperLimit))
         .toList();
     notifyListeners();
   }
