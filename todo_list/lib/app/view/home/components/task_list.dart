@@ -14,13 +14,20 @@ class _TaskListState extends State<TaskList> {
   Widget build(BuildContext context) {
     return Consumer<TaskProvider>(
       builder: (context, provider, child) {
-        provider.fetch();
-        return ListView.builder(
-            itemCount: provider.displayValueSize,
-            itemBuilder: (context, i) => TaskCard(
-                title: provider.displayResults[i].title,
-                description: provider.displayResults[i].description,
-                dueDate: provider.displayResults[i].dueDate));
+        //provider.fetch();
+        return provider.displayResults.isEmpty
+            ? const Center(
+                child: Text(
+                  'You have no tasks at the moment',
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
+              )
+            : ListView.builder(
+                itemCount: provider.displayValueSize,
+                itemBuilder: (context, i) => TaskCard(
+                    title: provider.displayResults[i].title,
+                    description: provider.displayResults[i].description,
+                    dueDate: provider.displayResults[i].dueDate));
       },
     );
   }
