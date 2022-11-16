@@ -4,17 +4,17 @@ import 'package:provider/provider.dart';
 import 'package:todo_list/app/controller/task_provider.dart';
 import 'package:todo_list/app/view/home/home.dart';
 
+import 'app/config/config.dart';
+import 'app/controller/theme_provider.dart';
 import 'app/model/entities/hive_task_scheme.dart';
 
 void main() async {
   await Hive.initFlutter();
   await Hive.openBox<HiveTaskScheme>('taskBox');
   Hive.registerAdapter(HiveTaskSchemeAdapter());
+  DarkThemeProvider themeChangeProvider = new DarkThemeProvider();
 
-  runApp(ChangeNotifierProvider(
-    create: (context) => TaskProvider(),
-    child: const MyApp(),
-  ));
+  runApp(MyApp());
 }
 
 class MyApp extends StatefulWidget {
@@ -25,13 +25,39 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
+  DarkThemeProvider themeChangeProvider = new DarkThemeProvider();
+
+  @override
+  void initState() {
+    super.initState();
+    getCurrentAppTheme();
+  }
+
+  void getCurrentAppTheme() async {
+    themeChangeProvider.darkTheme =
+        await themeChangeProvider.darkThemePreference.getTheme();
+  }
+
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-        debugShowCheckedModeBanner: false,
-        theme: ThemeData(
-          primarySwatch: Colors.indigo,
+    return MultiProvider(providers: [
+      ChangeNotifierProvider(
+        create: (context) => TaskProvider(),
+      ),
+      ChangeNotifierProvider(
+        create: (_) {
+          return themeChangeProvider;
+        },
+        child: Consumer<DarkThemeProvider>(
+          builder: (BuildContext context, value, Widget? child) {
+            return MaterialApp(
+              debugShowCheckedModeBanner: false,
+              theme: Styles.themeData(themeChangeProvider.darkTheme, context),
+              home: Home(),
+            );
+          },
         ),
-        home: const Home());
+      )
+    ]);
   }
 }
