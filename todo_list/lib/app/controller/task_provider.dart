@@ -14,12 +14,11 @@ class TaskProvider extends ChangeNotifier {
   void filterByName(filter) {
     _displayResults =
         _displayResults.where((e) => e.title.contains(filter)).toList();
-    print(displayResults);
     notifyListeners();
   }
 
   fetch() {
-    _defaultValues = repo.allTodos;
+    _defaultValues = repo.allTodos.toList();
     _displayResults = _defaultValues;
     notifyListeners();
   }
@@ -28,22 +27,26 @@ class TaskProvider extends ChangeNotifier {
     var filter = _displayResults.where((element) => element.title == title);
     if (filter.isEmpty) {
       await repo.addTodo(HiveTaskScheme(title, description, dueAt));
-      _displayResults.add(HiveTaskScheme(title, description, dueAt));
+      //_displayResults.add(HiveTaskScheme(title, description, dueAt));
+      fetch();
       notifyListeners();
     }
   }
 
   void remove(title) {
-    //repo.removeTodo(title);
-    displayResults.removeWhere((e) => (e.title == title));
+    repo.removeTodo(title);
+    //displayResults.removeWhere((e) => (e.title == title));
+    fetch();
+    print(repo.allTodos.toList());
     notifyListeners();
   }
 
   void edit(String originalTitle, String newOne) {
-    //repo.editTodo(originalTitle, newOne);
-    int targetIndex =
-        _displayResults.indexWhere((e) => e.title == originalTitle);
-    _displayResults[targetIndex].title = newOne;
+    repo.editTodo(originalTitle, newOne);
+    fetch();
+    //int targetIndex =
+    //    _displayResults.indexWhere((e) => e.title == originalTitle);
+    //_displayResults[targetIndex].title = newOne;
     notifyListeners();
   }
 
