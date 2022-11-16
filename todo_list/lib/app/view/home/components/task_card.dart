@@ -1,29 +1,30 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:todo_list/app/pages/home/home_controller.dart';
-import 'package:todo_list/presentation/pages/home/home_controller.dart';
+import 'package:provider/provider.dart';
+import 'package:todo_list/app/controller/task_card_controller.dart';
+import 'package:todo_list/app/controller/task_provider.dart';
+import 'package:todo_list/app/view/home/components/edit_dialog.dart';
 
-class DetailsScreen extends StatelessWidget {
+class TaskCard extends StatelessWidget {
   String title;
   String description;
   DateTime dueDate;
   final HomeController _dueDateController = HomeController();
   late int daysLeft;
-  late Color color;
+  late Color? color;
 
-  DetailsScreen({
+  TaskCard({
     super.key,
     required this.title,
     required this.description,
     required this.dueDate,
   });
 
-  void initState() {
-    int daysLeft = _dueDateController.daysLeft(dueDate);
-    color = _dueDateController.dayAsColor(daysLeft);
-  }
-
   @override
   Widget build(BuildContext context) {
+    daysLeft = _dueDateController.daysLeft(dueDate);
+    color = _dueDateController.dayAsColor(dueDate);
+
     return Container(
       color: Colors.grey[300],
       child: Row(
@@ -40,7 +41,11 @@ class DetailsScreen extends StatelessWidget {
                       title,
                       style: TextStyle(fontSize: 24, color: color),
                     ),
-                    IconButton(onPressed: () {}, icon: const Icon(Icons.edit))
+                    IconButton(
+                        onPressed: () {
+                          displayTextInputDialog(context, title);
+                        },
+                        icon: const Icon(Icons.edit))
                   ]),
                   Row(children: [
                     const Icon(Icons.hourglass_bottom),
@@ -68,7 +73,12 @@ class DetailsScreen extends StatelessWidget {
                 ],
               ),
             ),
-            IconButton(onPressed: () {}, icon: const Icon(Icons.remove_circle))
+            IconButton(
+                onPressed: () {
+                  Provider.of<TaskProvider>(context, listen: false)
+                      .remove(title);
+                },
+                icon: const Icon(Icons.remove_circle))
           ]),
     );
   }
